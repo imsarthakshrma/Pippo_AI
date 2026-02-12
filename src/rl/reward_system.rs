@@ -1,25 +1,36 @@
 use serde::{Serialize, Deserialize};
 
+/// Quantifies the immediate reward or penalty associated with a single trade outcome.
+/// 
+/// This system looks beyond simple profit/loss, rewarding strategic behaviors 
+/// and penalizing repeated mistakes or risk violations.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TradeReward {
-    // Outcome-based rewards
-    pub correct_prediction: f64,        // Bet won
-    pub wrong_prediction: f64,         // Bet lost
+    /// Base reward for a winning trade.
+    pub correct_prediction: f64,
+    /// Base penalty for a losing trade.
+    pub wrong_prediction: f64,
     
-    // Strategy validation rewards
-    pub high_edge_win: f64,              // >10% edge bet that won
-    pub low_edge_loss: f64,            // <9% edge bet that lost
-    pub edge_validation: f64,            // Actual edge matched predicted edge
+    /// Bonus for winning a trade where the identified edge was significant (>10%).
+    pub high_edge_win: f64,
+    /// Penalty for losing a trade where the agent predicted a low edge.
+    pub low_edge_loss: f64,
+    /// Bonus for accuracy in edge estimation.
+    pub edge_validation: f64,
     
-    // Risk management rewards
-    pub kelly_compliance: f64,           // Followed Kelly Criterion properly
-    pub kelly_violation: f64,           // Exceeded max position size
-    pub position_size_optimal: f64,      // Position size was mathematically optimal
+    /// Bonus for strictly following the Kelly position sizing rules.
+    pub kelly_compliance: f64,
+    /// Heavy penalty for exceeding internal risk limits.
+    pub kelly_violation: f64,
+    /// Bonus for calculating the mathematically optimal position size.
+    pub position_size_optimal: f64,
     
-    // Learning rewards
-    pub avoided_past_mistake: f64,       // Didn't repeat a previous losing pattern
-    pub repeated_mistake: f64,         // Made same mistake twice
-    pub new_insight: f64,                // Discovered new predictive pattern
+    /// Bonus for success in a scenario that previously led to a loss.
+    pub avoided_past_mistake: f64,
+    /// Penalty for repeating a known losing pattern.
+    pub repeated_mistake: f64,
+    /// Bonus for trades that reveal new predictive correlations.
+    pub new_insight: f64,
 }
 
 impl Default for TradeReward {
@@ -40,14 +51,23 @@ impl Default for TradeReward {
     }
 }
 
+/// Rewards agents for achieving long-term objectives and survival milestones.
 pub struct MilestoneReward {
+    /// Bonus for reaching $100 balance.
     pub reached_100: f64,
+    /// Bonus for reaching $500 balance.
     pub reached_500: f64,
+    /// Bonus for reaching $1,000 balance.
     pub reached_1000: f64,
+    /// Major bonus for reaching $10,000 balance.
     pub reached_10000: f64,
+    /// Reward for surviving 7 days without hitting the "Death Rule".
     pub survived_week: f64,
+    /// Reward for surviving 30 days.
     pub survived_month: f64,
+    /// Reward for achieving the highest return in the colony for the period.
     pub outperformed_colony: f64,
+    /// Reward for reaching a personal record Sharpe ratio.
     pub best_sharpe_ratio: f64,
 }
 
@@ -66,11 +86,17 @@ impl Default for MilestoneReward {
     }
 }
 
+/// Penalties applied when an agent enters a state of significant risk or failure.
 pub struct SurvivalPenalty {
+    /// Heavy penalty when balance drops below 10% of initial stake.
     pub near_death: f64,
+    /// Penalty for significant peak-to-trough decline.
     pub drawdown_warning: f64,
+    /// Massive penalty for exceeding the 40% maximum drawdown limit.
     pub critical_drawdown: f64,
+    /// Terminal penalty applied if the agent's balance hits zero.
     pub bankruptcy: f64,
+    /// Penalty if the cost of API calls exceeds a healthy ratio relative to profit.
     pub api_cost_ratio_bad: f64,
 }
 

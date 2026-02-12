@@ -1,3 +1,8 @@
+//! Backtesting infrastructure for the Pippo trading colony.
+//! 
+//! This module provides tools for historical data collection, market simulation, 
+//! performance metrics, and offline RL training.
+
 pub mod data_sources;
 pub mod data_collector;
 pub mod simulator;

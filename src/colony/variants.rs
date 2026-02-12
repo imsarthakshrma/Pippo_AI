@@ -2,6 +2,7 @@ use crate::colony::traits::TradingPersonality;
 use crate::trading::analyzer::AnalysisResult;
 use async_trait::async_trait;
 
+/// Personality: Aggressive trader with a low edge threshold and high risk appetite.
 pub struct PippoAlpha;
 #[async_trait]
 impl TradingPersonality for PippoAlpha {
@@ -12,6 +13,7 @@ impl TradingPersonality for PippoAlpha {
     async fn adjust_analysis(&self, analysis: AnalysisResult) -> AnalysisResult { analysis }
 }
 
+/// Personality: Cautious trader requiring significant edge and using smaller position sizes.
 pub struct PippoBeta;
 #[async_trait]
 impl TradingPersonality for PippoBeta {
@@ -22,6 +24,7 @@ impl TradingPersonality for PippoBeta {
     async fn adjust_analysis(&self, analysis: AnalysisResult) -> AnalysisResult { analysis }
 }
 
+/// Personality: Contrarian trader that seeks to identify and fade crowd bias.
 pub struct PippoGamma;
 #[async_trait]
 impl TradingPersonality for PippoGamma {
@@ -35,6 +38,7 @@ impl TradingPersonality for PippoGamma {
     }
 }
 
+/// Personality: Momentum trader that follows strong social and market trends.
 pub struct PippoDelta;
 #[async_trait]
 impl TradingPersonality for PippoDelta {
@@ -45,6 +49,7 @@ impl TradingPersonality for PippoDelta {
     async fn adjust_analysis(&self, analysis: AnalysisResult) -> AnalysisResult { analysis }
 }
 
+/// Personality: Meta-learner that observes colleague behavior to refine collective state.
 pub struct PippoOmega;
 #[async_trait]
 impl TradingPersonality for PippoOmega {

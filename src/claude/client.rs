@@ -3,12 +3,17 @@ use anyhow::Result;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use tracing::info;
 
+/// A specialized HTTP client for interacting with the Anthropic Claude API.
+/// 
+/// It supports the `interleaved-thinking-2025-05-14` beta feature, 
+/// long-running tool-use loops, and extended thinking blocks.
 pub struct ClaudeClient {
     client: reqwest::Client,
     api_key: String,
 }
 
 impl ClaudeClient {
+    /// Initializes a new `ClaudeClient` with the required beta headers.
     pub fn new(api_key: String) -> Self {
         let mut headers = HeaderMap::new();
         headers.insert("x-api-key", HeaderValue::from_str(&api_key).unwrap());
@@ -24,6 +29,11 @@ impl ClaudeClient {
         Self { client, api_key }
     }
 
+    /// Orchestrates a conversation turn that may involve multiple tool calls.
+    /// 
+    /// This method automatically executes requested tools and feeds their results 
+    /// back to Claude, maintaining the full conversation history (including thinking 
+    /// blocks) until a final response is generated.
     pub async fn chat_with_tools(&self, mut request: ClaudeRequest) -> Result<ClaudeResponse> {
         loop {
             let response = self.send_request(&request).await?;
@@ -76,6 +86,7 @@ impl ClaudeClient {
         }
     }
 
+    /// Sends a low-level POST request to the Claude API and handles response deserialization.
     pub async fn send_request(&self, request: &ClaudeRequest) -> Result<ClaudeResponse> {
         let url = "https://api.anthropic.com/v1/messages";
         let response = self.client.post(url)

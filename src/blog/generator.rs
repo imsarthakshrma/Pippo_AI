@@ -2,17 +2,23 @@ use anyhow::Result;
 use crate::claude::{ClaudeClient, ClaudeRequest, Message, ContentBlock};
 use crate::blog::prompts::*;
 
+/// Generates personality-driven blog posts using the Claude API.
+/// 
+/// The `BlogGenerator` uses specific system prompts for each agent to create 
+/// first-person reflections on daily market events and colony dynamics.
 pub struct BlogGenerator {
     client: ClaudeClient,
 }
 
 impl BlogGenerator {
+    /// Creates a new `BlogGenerator` with the provided Claude API key.
     pub fn new(api_key: String) -> Self {
         Self {
             client: ClaudeClient::new(api_key),
         }
     }
 
+    /// Generates a daily blog post for a specific agent based on their day's events.
     pub async fn generate_daily_blog(
         &self,
         agent_id: &str,
@@ -55,8 +61,12 @@ impl BlogGenerator {
     }
 }
 
+/// Encapsulates the events and observations for a single agent's day.
 pub struct DayEvents {
+    /// Major world or market events the agent observed.
     pub main_events: Vec<String>,
+    /// Specific data sources (e.g., NOAA, Polymarket) queried.
     pub data_sources: Vec<String>,
+    /// Interactions or observations regarding other colony members.
     pub colony_moments: Vec<String>,
 }

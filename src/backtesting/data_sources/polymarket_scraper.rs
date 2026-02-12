@@ -4,6 +4,7 @@ use reqwest::Client;
 use serde::Deserialize;
 use std::time::Duration;
 
+/// A scraper for fetching historical market data from the Polymarket (Gamma) API.
 pub struct PolymarketHistoricalScraper {
     client: Client,
 }
@@ -11,6 +12,7 @@ pub struct PolymarketHistoricalScraper {
 use tracing::info;
 
 impl PolymarketHistoricalScraper {
+    /// Creates a new `PolymarketHistoricalScraper` with a 30-second timeout.
     pub fn new() -> Self {
         Self {
             client: Client::builder()
@@ -20,6 +22,10 @@ impl PolymarketHistoricalScraper {
         }
     }
 
+    /// Fetches a list of historical (closed) markets within the specified date range.
+    /// 
+    /// This method paginates through the Polymarket API, filtering results 
+    /// by their `end_date`.
     pub async fn fetch_historical_markets(
         &self,
         start_date: DateTime<Utc>,
@@ -80,18 +86,29 @@ impl PolymarketHistoricalScraper {
     }
 }
 
+/// Represents a single prediction market's historical data from Polymarket.
 #[derive(Debug, Deserialize, Clone)]
 pub struct HistoricalMarket {
+    /// Unique identifier for the market.
     pub id: String,
+    /// The primary question being predicted.
     pub question: String,
+    /// Detailed description of the market constraints and context.
     pub description: Option<String>,
+    /// The timestamp when the market resolution was finalized.
     #[serde(alias = "endDate")]
     pub end_date: Option<DateTime<Utc>>,
+    /// The final outcome of the market (e.g., "Yes", "No", or specific category).
     pub outcome: Option<String>,
+    /// Total trading volume associated with this market.
     #[serde(deserialize_with = "deserialize_nullable_f64_from_str", default)]
     pub volume: Option<f64>,
 }
 
+/// Custom deserializer to handle string-encoded numerical values from the Polymarket API.
+/// 
+/// This is necessary because some numerical fields (like `volume`) are returned 
+/// as strings in certain API responses.
 fn deserialize_nullable_f64_from_str<'de, D>(deserializer: D) -> Result<Option<f64>, D::Error>
 where
     D: serde::Deserializer<'de>,

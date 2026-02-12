@@ -1,12 +1,19 @@
 use tracing::{error, info};
 use std::collections::HashMap;
 
+/// Manages the core financial state and survival rules for the colony.
+/// 
+/// The `RlSystem` tracks agent balances and enforces the "Death Rule," 
+/// ensuring the colony shuts down if capital is exhausted.
 pub struct RlSystem {
+    /// Mapping of agent names to their current allocated USD balance.
     pub agent_balances: HashMap<String, f64>,
+    /// The initial total capital split among the colony.
     pub total_initial_capital: f64,
 }
 
 impl RlSystem {
+    /// Initializes the `RlSystem` by splitting the total capital among the starting agents.
     pub fn new(total_capital: f64, agent_names: Vec<String>) -> Self {
         let mut agent_balances = HashMap::new();
         let split_capital = total_capital / agent_names.len() as f64;
@@ -21,6 +28,9 @@ impl RlSystem {
         }
     }
 
+    /// Checks if any agents have hit a $0 balance and removes them from the colony.
+    /// 
+    /// If the last agent fails, it returns `true` to indicate a complete colony collapse.
     pub fn check_death_rule(&mut self) -> bool {
         let mut failed_agents = Vec::new();
 
@@ -48,6 +58,7 @@ impl RlSystem {
         false
     }
 
+    /// Updates an agent's balance based on trade profit/loss and records achievements.
     pub fn process_milestones(&mut self, agent_id: &str, profit: f64) {
         if let Some(balance) = self.agent_balances.get_mut(agent_id) {
             *balance += profit;
