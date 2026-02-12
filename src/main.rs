@@ -1,3 +1,11 @@
+//! Entry point for the Pippo trading agent.
+//! 
+//! This binary orchestrates the full lifecycle of the trading colony, including:
+//! - Configuration loading
+//! - Component initialization (Colony, Analyzer, RL System)
+//! - The main trading loop (market scanning, analysis, execution)
+//! - Graceful shutdown handling
+
 mod claude;
 mod market;
 mod db;
@@ -11,16 +19,12 @@ mod backtesting;
 
 use anyhow::Result;
 use tokio::time::{self, Duration};
-use tracing::{error, info, Level};
-use tracing_subscriber::FmtSubscriber;
+use tracing::{error, info};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Initialize logging
-    let subscriber = FmtSubscriber::builder()
-        .with_max_level(Level::INFO)
-        .finish();
-    tracing::subscriber::set_global_default(subscriber)?;
+    // Initialize logging via the monitoring module
+    monitoring::init_telemetry()?;
 
     info!("Pippo is waking up...");
 

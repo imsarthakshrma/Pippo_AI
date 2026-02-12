@@ -2,17 +2,26 @@ use crate::claude::{ClaudeClient, ClaudeRequest, Message, ContentBlock, Thinking
 use crate::market::Market;
 use anyhow::Result;
 
+/// Responsible for analyzing prediction markets using Claude's reasoning capabilities.
+/// 
+/// The `MarketAnalyzer` sends market data to Claude with an extended thinking budget 
+/// to receive probabilistic estimates and fair value calculations.
 pub struct MarketAnalyzer {
     client: ClaudeClient,
 }
 
 impl MarketAnalyzer {
+    /// Creates a new `MarketAnalyzer` with an initialized Claude client.
     pub fn new(api_key: String) -> Self {
         Self {
             client: ClaudeClient::new(api_key),
         }
     }
 
+    /// Analyzes a list of markets and returns fair value estimates.
+    ///
+    /// The `budget` parameter determines how many tokens Claude can use for 
+    /// internal reasoning before delivering the final JSON results.
     pub async fn analyze_markets(&self, markets: &[Market], budget: usize) -> Result<Vec<AnalysisResult>> {
         let system_prompt = "You are Pippo, an autonomous prediction market trading agent. \
             Your goal is to grow your capital or shut down forever. \
@@ -54,10 +63,15 @@ impl MarketAnalyzer {
     }
 }
 
+/// The raw output from a market analysis session.
 #[derive(Debug, serde::Deserialize)]
 pub struct AnalysisResult {
+    /// ID of the scrutinized market.
     pub market_id: String,
+    /// Model's estimated fair value (probability between 0 and 1).
     pub fair_value: f64,
+    /// Calculated advantage over the current market price.
     pub edge: f64,
+    /// Summary of the model's reasoning for this valuation.
     pub rationale: String,
 }
