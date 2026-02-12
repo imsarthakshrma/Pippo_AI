@@ -1,3 +1,4 @@
+pub mod data_sources;
 pub mod data_collector;
 pub mod simulator;
 pub mod metrics;

@@ -36,6 +36,15 @@ pub enum ContentBlock {
     ToolResult { tool_use_id: String, content: String },
 }
 
+impl ContentBlock {
+    pub fn as_text(&self) -> Option<&str> {
+        match self {
+            ContentBlock::Text { text } => Some(text),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct ClaudeResponse {
     pub id: String,

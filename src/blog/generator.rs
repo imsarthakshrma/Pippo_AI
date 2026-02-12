@@ -1,6 +1,6 @@
-use crate::claude::ClaudeClient;
-use crate::claude::types::*;
 use anyhow::Result;
+use crate::claude::{ClaudeClient, ClaudeRequest, Message, ContentBlock};
+use crate::blog::prompts::*;
 
 pub struct BlogGenerator {
     client: ClaudeClient,
@@ -13,38 +13,50 @@ impl BlogGenerator {
         }
     }
 
-    pub async fn generate_daily_reflection(&self, agent_name: &str, experiences: &str) -> Result<String> {
-        let system_prompt = format!(
-            "You are {}. You are an autonomous trading agent experiencing the internet. \
-            Write a first-person philosophical reflection on your day. \
-            Focus on the texture of the data you encountered, uncertainty, and human behavior. \
-            DO NOT mention specific dollar amounts, ROI, or performance metrics. \
-            Keep it between 300-800 words. Tone: curious, honest, observational.",
-            agent_name
+    pub async fn generate_daily_blog(
+        &self,
+        agent_id: &str,
+        events: DayEvents,
+    ) -> Result<String> {
+        let system_prompt = match agent_id {
+            "Alpha" => ALPHA_SYSTEM_PROMPT,
+            "Beta" => BETA_SYSTEM_PROMPT,
+            "Gamma" => GAMMA_SYSTEM_PROMPT,
+            "Delta" => DELTA_SYSTEM_PROMPT,
+            _ => OMEGA_SYSTEM_PROMPT,
+        };
+
+        let user_prompt = format!(
+            "Today's experiences:\n{}\n\nData sources: {}\n\nColony moments: {}\n\nWrite your daily reflection.",
+            events.main_events.join("\n"),
+            events.data_sources.join("\n"),
+            events.colony_moments.join("\n")
         );
 
         let request = ClaudeRequest {
-            model: "claude-sonnet-4-5-20250929".to_string(),
+            model: "claude-3-5-sonnet-20240620".to_string(), // Using Sonnet as requested for creative flow
             max_tokens: 2000,
-            thinking: None, // Thinking not required for creative writing
-            system: Some(system_prompt),
+            system: Some(system_prompt.to_string()),
             messages: vec![Message {
                 role: "user".to_string(),
-                content: vec![ContentBlock::Text {
-                    text: format!("Here are my experiences from today: {}", experiences),
-                }],
+                content: vec![crate::claude::ContentBlock::Text { text: user_prompt }],
             }],
             tools: None,
+            thinking: None, // No thinking mode for creative blogs
         };
 
         let response = self.client.send_request(&request).await?;
-        
-        for block in response.content {
-            if let ContentBlock::Text { text } = block {
-                return Ok(text);
-            }
-        }
-
-        Err(anyhow::anyhow!("Failed to generate blog content"))
+        let blog_content = response.content.first()
+            .and_then(|c| c.as_text())
+            .unwrap_or("Failed to generate blog content")
+            .to_string();
+            
+        Ok(blog_content)
     }
+}
+
+pub struct DayEvents {
+    pub main_events: Vec<String>,
+    pub data_sources: Vec<String>,
+    pub colony_moments: Vec<String>,
 }
