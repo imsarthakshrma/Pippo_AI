@@ -174,7 +174,7 @@ impl BacktestSimulator {
                                 let agent = self.colony.agents().iter().find(|a| a.name() == agent_id).unwrap();
                                 let balance = *self.rl.agent_balances.get(agent_id).unwrap_or(&0.0);
                                 let size = crate::trading::KellySizer::calculate_position_size(
-                                    balance, price, res.fair_value, agent.kelly_fraction()
+                                    balance, 1.0 / price, res.fair_value, agent.kelly_fraction()
                                 );
 
                                 if size > 0.0 {
