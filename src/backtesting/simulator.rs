@@ -5,8 +5,11 @@ use crate::logic::RlSystem;
 use crate::market::Market;
 use crate::backtesting::metrics::MetricsTracker;
 use crate::colony::voting_protocol::{VotingRound, VoteTrigger, Vote, VotePosition, VotingOutcome};
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use chrono::{DateTime, Duration, Utc};
+
+/// Sentinel for markets with no defined end date — treated as perpetually active.
+const FAR_FUTURE: DateTime<Utc> = DateTime::<Utc>::MAX_UTC;
 use tracing::{info, warn};
 use std::sync::Arc;
 use sqlx::SqlitePool;
@@ -76,6 +79,9 @@ impl BacktestSimulator {
     }
 
     fn calculate_total_return(&self) -> f64 {
+        if self.rl.total_initial_capital == 0.0 {
+            return 0.0;
+        }
         let current_capital: f64 = self.rl.agent_balances.values().sum();
         ((current_capital - self.rl.total_initial_capital) / self.rl.total_initial_capital) * 100.0
     }
@@ -87,7 +93,7 @@ impl BacktestSimulator {
 
         // 2. Identify active markets
         let active_historical = self.markets.iter()
-            .filter(|m| m.created_at <= self.current_time && m.end_date.unwrap_or(m.created_at) > self.current_time)
+            .filter(|m| m.created_at <= self.current_time && m.end_date.unwrap_or(FAR_FUTURE) > self.current_time)
             .collect::<Vec<_>>();
 
         if active_historical.is_empty() {
@@ -195,19 +201,23 @@ impl BacktestSimulator {
         let mut i = 0;
         while i < self.open_positions.len() {
             let pos = &self.open_positions[i];
-            let market = self.markets.iter().find(|m| m.id == pos.market_id).unwrap();
-            
+            let market = self.markets.iter()
+                .find(|m| m.id == pos.market_id)
+                .ok_or_else(|| anyhow!("Market {} not found for open position held by {}", pos.market_id, pos.agent_id))?;
+
             if let Some(end_date) = market.end_date {
                 if self.current_time >= end_date {
-                    let win = market.outcome.as_deref() == Some("YES");
+                    let win = market.outcome.as_deref()
+                        .map(|o| o.eq_ignore_ascii_case("yes"))
+                        .unwrap_or(false);
                     let payout = if win { pos.size / pos.entry_price } else { 0.0 };
                     let profit = payout - pos.size;
 
                     info!("Trade resolved for {}: {} (Win: {}) P/L: ${:.2}", pos.agent_id, pos.market_id, win, profit);
-                    
+
                     self.rl.process_milestones(&pos.agent_id, payout);
                     self.metrics.track_trade(&pos.agent_id, profit);
-                    
+
                     self.open_positions.remove(i);
                     continue;
                 }

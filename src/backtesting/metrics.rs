@@ -6,7 +6,7 @@ use std::collections::HashMap;
 pub struct BacktestReport {
     /// Unique identifier for the agent (e.g., "alpha", "beta").
     pub agent_id: String,
-    /// Total percentage return on capital.
+    /// Total percentage return on capital (set externally by the simulator).
     pub total_return_percent: f64,
     /// Ratio of winning trades to total trades.
     pub win_rate: f64,
@@ -16,6 +16,10 @@ pub struct BacktestReport {
     pub sharpe_ratio: f64,
     /// Total number of trades executed during the period.
     pub trade_count: usize,
+    /// Number of winning trades (profit > 0).
+    pub win_count: usize,
+    /// Cumulative raw profit/loss across all trades.
+    pub total_raw_profit: f64,
     /// Whether the agent met the "graduation" criteria (Sharpe > 1.5, Drawdown < 40%).
     pub success: bool,
 }
@@ -42,16 +46,10 @@ impl MetricsTracker {
 
         report.trade_count += 1;
         if profit > 0.0 {
-            let win_count = (report.win_rate * (report.trade_count - 1) as f64).round() as usize + 1;
-            report.win_rate = win_count as f64 / report.trade_count as f64;
-        } else {
-            let win_count = (report.win_rate * (report.trade_count - 1) as f64).round() as usize;
-            report.win_rate = win_count as f64 / report.trade_count as f64;
+            report.win_count += 1;
         }
-
-        // Simplified Sharpe and Drawdown for mock purposes
-        // In a real implementation, we would track the equity curve here
-        report.total_return_percent += profit; 
+        report.win_rate = report.win_count as f64 / report.trade_count as f64;
+        report.total_raw_profit += profit;
     }
 
     /// Collects all current metrics into a list of reports.
