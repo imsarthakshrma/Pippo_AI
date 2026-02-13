@@ -4,6 +4,7 @@
 //! - Configuration loading
 //! - Component initialization (Colony, Analyzer, RL System)
 //! - The main trading loop (market scanning, analysis, execution)
+//! - Interactive CLI chat with Pippo personalities (`--chat`)
 //! - Graceful shutdown handling
 
 mod claude;
@@ -16,6 +17,7 @@ mod monitoring;
 mod colony;
 mod blog;
 mod backtesting;
+mod cli;
 
 use anyhow::Result;
 use tokio::time::{self, Duration};
@@ -32,6 +34,12 @@ async fn main() -> Result<()> {
     // 1. Load configuration
     let cfg = crate::config::load()?;
     
+    // Check for --chat flag
+    let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|a| a == "--chat") {
+        return run_chat_mode(&cfg).await;
+    }
+
     // 2. Initialize database
     let db_manager = db::DbManager::new(&cfg.trading.database_url).await?;
     
@@ -68,6 +76,51 @@ async fn main() -> Result<()> {
 
     info!("Pippo has shut down.");
     Ok(())
+}
+
+/// Launches the interactive Pippo Chat REPL.
+async fn run_chat_mode(cfg: &crate::config::PippoConfig) -> Result<()> {
+    use cli::personality::{ColonyContext, PippoPersonality};
+    use cli::repl::{PippoChat, run_repl};
+    use std::collections::HashMap;
+
+    // Build colony context (from DB if available, otherwise from config defaults)
+    let context = match db::DbManager::new(&cfg.trading.database_url).await {
+        Ok(db) => {
+            let colony = colony::colony_manager::ColonyManager::new(db.pool().clone());
+            let agent_names: Vec<String> = colony.agents().iter().map(|a| a.name().to_string()).collect();
+            let rl = logic::RlSystem::new(cfg.trading.balance_usd, agent_names.clone());
+            
+            ColonyContext {
+                balances: rl.agent_balances.clone(),
+                recent_trades: Vec::new(), // TODO: query recent trades from DB
+                initial_capital: rl.total_initial_capital,
+            }
+        }
+        Err(_) => {
+            // Fallback: use config defaults with no trade history
+            let mut balances = HashMap::new();
+            let per_agent = cfg.trading.balance_usd / 5.0;
+            for name in &["Pippo-Alpha", "Pippo-Beta", "Pippo-Gamma", "Pippo-Delta", "Pippo-Omega"] {
+                balances.insert(name.to_string(), per_agent);
+            }
+            ColonyContext {
+                balances,
+                recent_trades: Vec::new(),
+                initial_capital: cfg.trading.balance_usd,
+            }
+        }
+    };
+
+    let client = claude::client::ClaudeClient::new(cfg.claude.api_key.clone());
+    let mut chat = PippoChat::new(
+        client,
+        context,
+        cfg.claude.model.clone(),
+        512, // Short responses for personality chat
+    );
+
+    run_repl(&mut chat).await
 }
 
 async fn run_cycle(analyzer: &trading::analyzer::MarketAnalyzer, cfg: &crate::config::PippoConfig) -> Result<()> {

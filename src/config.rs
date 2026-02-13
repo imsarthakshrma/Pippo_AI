@@ -17,7 +17,12 @@ pub struct ClaudeConfig {
     pub max_tokens: usize,
     pub thinking_budget_default: usize,
     pub thinking_budget_complex: usize,
+    /// Temperature for personality chat (0.0–1.0). Higher = more expressive.
+    #[serde(default = "default_chat_temperature")]
+    pub chat_temperature: f64,
 }
+
+fn default_chat_temperature() -> f64 { 0.75 }
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct PolymarketConfig {
