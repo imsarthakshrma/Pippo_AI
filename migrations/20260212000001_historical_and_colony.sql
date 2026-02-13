@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS historical_markets (
     question TEXT NOT NULL,
     description TEXT,
     created_at TIMESTAMP NOT NULL,
-    end_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP, -- Nullable to support markets without a set end date
     outcome TEXT NOT NULL,  -- 'YES' or 'NO'
     volume REAL,
     market_type TEXT
@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS historical_odds (
     market_id TEXT NOT NULL,
     timestamp TIMESTAMP NOT NULL,
     price REAL NOT NULL,  -- 0-1 probability
+    PRIMARY KEY (market_id, timestamp),
     FOREIGN KEY (market_id) REFERENCES historical_markets(id)
 );
 
@@ -79,7 +80,7 @@ CREATE TABLE IF NOT EXISTS capital_transfers (
     id TEXT PRIMARY KEY,
     from_agent TEXT NOT NULL,
     to_agent TEXT NOT NULL,
-    amount REAL NOT NULL,
+    amount INTEGER NOT NULL, -- Stored in cents to avoid floating-point issues
     reason TEXT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

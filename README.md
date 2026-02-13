@@ -93,11 +93,19 @@ graph TD
    cargo build
    ```
 2. **Configure Environment**:
-   Create a `.env` file or update `config.toml`:
-   ```toml
-   ANTHROPIC_API_KEY = "your_key_here"
-   DATABASE_URL = "sqlite:pippo.db"
-   ```
+   - Create a `.env` file for sensitive keys:
+     ```env
+     ANTHROPIC_API_KEY=your_key_here
+     DATABASE_URL=sqlite:pippo.db
+     ```
+   - Or update `config.toml` for agent parameters:
+     ```toml
+     [claude]
+     api_key = "your_key_here"
+     
+     [trading]
+     balance_usd = 1000.0
+     ```
 3. **Run Backtest**:
    ```bash
    cargo run --bin poc_collection -- --days 30

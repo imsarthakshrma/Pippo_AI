@@ -7,11 +7,11 @@ use pippo::backtesting::data_sources::polymarket_scraper::HistoricalMarket;
 async fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
     
-    let collector = HistoricalDataCollector::new();
+    let collector = HistoricalDataCollector::new("dummy_noaa_token".to_string());
     let end_date = Utc::now();
     let start_date = end_date - Duration::days(400);
     
-    println!("Starting proof-of-concept data collection for 1 week...");
+    println!("Starting proof-of-concept data collection for 400 days...");
     let markets: Vec<HistoricalMarket> = collector.collect_full_dataset(start_date, end_date).await?;
     
     println!("Successfully collected {} markets.", markets.len());

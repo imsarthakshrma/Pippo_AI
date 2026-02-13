@@ -6,6 +6,7 @@ use serde::Deserialize;
 /// A scraper for fetching historical weather data from the NOAA CDO API.
 pub struct NOAAHistoricalScraper {
     client: Client,
+    #[allow(dead_code)]
     api_token: String,
 }
 

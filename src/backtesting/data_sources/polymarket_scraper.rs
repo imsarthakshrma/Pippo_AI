@@ -9,7 +9,9 @@ pub struct PolymarketHistoricalScraper {
     client: Client,
 }
 
-use tracing::info;
+use tracing::{info, warn};
+
+const MAX_OFFSET: u32 = 5000;
 
 impl PolymarketHistoricalScraper {
     /// Creates a new `PolymarketHistoricalScraper` with a 30-second timeout.
@@ -79,7 +81,13 @@ impl PolymarketHistoricalScraper {
             
             tokio::time::sleep(Duration::from_millis(100)).await;
             
-            if offset > 5000 { break; } 
+            if offset >= MAX_OFFSET { 
+                warn!(
+                    "Pagination hit MAX_OFFSET ({}). Truncating results. Start: {}, End: {}", 
+                    MAX_OFFSET, start_date, end_date
+                );
+                break; 
+            } 
         }
         
         Ok(all_markets)
@@ -115,9 +123,16 @@ where
 {
     let s: Option<String> = Option::deserialize(deserializer)?;
     match s {
-        Some(s) => s.parse::<f64>()
-            .map(Some)
-            .map_err(serde::de::Error::custom),
+        Some(s) => {
+            let trimmed = s.trim();
+            if trimmed.is_empty() {
+                Ok(None)
+            } else {
+                trimmed.parse::<f64>()
+                    .map(Some)
+                    .map_err(serde::de::Error::custom)
+            }
+        }
         None => Ok(None),
     }
 }

@@ -18,3 +18,4 @@ pub mod colony;
 pub mod blog;
 pub mod backtesting;
 pub mod rl;
+pub mod python_bridge;
