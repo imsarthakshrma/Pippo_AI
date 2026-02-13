@@ -22,10 +22,10 @@ pub struct HistoricalDataCollector {
 
 impl HistoricalDataCollector {
     /// Creates a new `HistoricalDataCollector` with initialized scrapers.
-    pub fn new() -> Self {
+    pub fn new(noaa_token: String) -> Self {
         Self {
             polymarket: PolymarketHistoricalScraper::new(),
-            noaa: NOAAHistoricalScraper::new("".to_string()),
+            noaa: NOAAHistoricalScraper::new(noaa_token),
             sports: SportsHistoricalScraper::new(),
             crypto: CryptoHistoricalScraper::new(),
             sentiment: SentimentHistoricalScraper::new(),
@@ -64,16 +64,33 @@ impl HistoricalDataCollector {
             
             match market_type {
                 MarketType::Weather => {
-                    let _ = self.noaa.fetch_weather_for_date("NYC", ed.date_naive()).await;
+                    let location = extract_location(&market.question).unwrap_or("NYC".to_string());
+                    match self.noaa.fetch_weather_for_date(&location, ed.date_naive()).await {
+                        Ok(data) => info!("Enriched weather for {}: {:?}", location, data),
+                        Err(e) => error!("Failed to fetch weather for {}: {:?}", location, e),
+                    }
                 }
                 MarketType::Sports => {
-                    let _ = self.sports.fetch_game_results("NBA", ed.date_naive()).await;
+                    let sport = extract_sport(&market.question).unwrap_or("NBA".to_string());
+                    match self.sports.fetch_game_results(&sport, ed.date_naive()).await {
+                        Ok(data) => info!("Enriched sports for {}: {:?}", sport, data),
+                        Err(e) => error!("Failed to fetch sports for {}: {:?}", sport, e),
+                    }
                 }
                 MarketType::Crypto => {
-                    let _ = self.crypto.fetch_price_history("BTC", ed - chrono::Duration::hours(24), ed).await;
+                    let asset = extract_asset(&market.question).unwrap_or("BTC".to_string());
+                    let start = ed - chrono::Duration::hours(24);
+                    match self.crypto.fetch_price_history(&asset, start, ed).await {
+                        Ok(data) => info!("Enriched crypto for {}: {:?}", asset, data),
+                        Err(e) => error!("Failed to fetch crypto for {}: {:?}", asset, e),
+                    }
                 }
                 _ => {
-                    let _ = self.sentiment.fetch_reddit_sentiment("all", ed.date_naive()).await;
+                    let topic = extract_topic(&market.question).unwrap_or("all".to_string());
+                    match self.sentiment.fetch_reddit_sentiment(&topic, ed.date_naive()).await {
+                        Ok(data) => info!("Enriched sentiment for {}: {:?}", topic, data),
+                        Err(e) => error!("Failed to fetch sentiment for {}: {:?}", topic, e),
+                    }
                 }
             }
         }
@@ -86,7 +103,7 @@ impl HistoricalDataCollector {
         let q_lower = question.to_lowercase();
         if q_lower.contains("rain") || q_lower.contains("snow") || q_lower.contains("temperature") {
             MarketType::Weather
-        } else if q_lower.contains("nba") || q_lower.contains("nfl") || q_lower.contains("win") {
+        } else if is_sports_market(&q_lower) {
             MarketType::Sports
         } else if q_lower.contains("bitcoin") || q_lower.contains("ethereum") || q_lower.contains("btc") {
             MarketType::Crypto
@@ -110,4 +127,51 @@ pub enum MarketType {
     Politics,
     /// Any other market type not specifically categorized.
     Other,
+}
+
+/// Helper to determine if a market is sports-related using specific signals.
+fn is_sports_market(q: &str) -> bool {
+    let signals = ["nba", "nfl", "mlb", "nhl", "goal", "touchdown", "home run", "score", "mvp"];
+    let mut count = 0;
+    for &s in &signals {
+        // Simple word-boundary check
+        let pattern = format!(" {} ", s);
+        if q.contains(&pattern) || q.starts_with(s) || q.ends_with(s) {
+            count += 1;
+            if s == "nba" || s == "nfl" || s == "mlb" || s == "nhl" {
+                return true; // Direct league hit
+            }
+        }
+    }
+    count >= 2
+}
+
+fn extract_location(q: &str) -> Option<String> {
+    let q_lower = q.to_lowercase();
+    if q_lower.contains("nyc") || q_lower.contains("new york") { Some("NYC".to_string()) }
+    else if q_lower.contains("london") { Some("London".to_string()) }
+    else if q_lower.contains("tokyo") { Some("Tokyo".to_string()) }
+    else { None }
+}
+
+fn extract_sport(q: &str) -> Option<String> {
+    let q_lower = q.to_lowercase();
+    if q_lower.contains("nba") { Some("NBA".to_string()) }
+    else if q_lower.contains("nfl") { Some("NFL".to_string()) }
+    else if q_lower.contains("mlb") { Some("MLB".to_string()) }
+    else if q_lower.contains("nhl") { Some("NHL".to_string()) }
+    else { None }
+}
+
+fn extract_asset(q: &str) -> Option<String> {
+    let q_lower = q.to_lowercase();
+    if q_lower.contains("btc") || q_lower.contains("bitcoin") { Some("BTC".to_string()) }
+    else if q_lower.contains("eth") || q_lower.contains("ethereum") { Some("ETH".to_string()) }
+    else { None }
+}
+
+fn extract_topic(q: &str) -> Option<String> {
+    let q_lower = q.to_lowercase();
+    if q_lower.contains("election") || q_lower.contains("president") { Some("politics".to_string()) }
+    else { None }
 }

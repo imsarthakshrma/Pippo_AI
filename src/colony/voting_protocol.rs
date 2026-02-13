@@ -64,9 +64,12 @@ pub enum VotePosition {
 }
 
 /// The final resolution of a voting round.
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub enum VotingOutcome {
-    /// The trade was rejected (vetoed).
+    /// The trade was rejected (vetoed by a StrongNo).
     Vetoed,
+    /// The trade was rejected by a majority vote.
+    Rejected,
     /// The trade was approved with a specific aggregate confidence/size.
     Approved(f64),
     /// No consensus reached; follow the agent with the highest confidence.
@@ -87,18 +90,30 @@ impl VotingRound {
             return VotingOutcome::Vetoed;
         }
         
-        // Rule 2: Consensus (>3 agents agree) = proceed
-        if self.consensus_count() >= 3 {
+        let yes_count = self.votes.values()
+            .filter(|v| v.position == VotePosition::Yes || v.position == VotePosition::StrongYes)
+            .count();
+        let no_count = self.votes.values()
+            .filter(|v| v.position == VotePosition::No || v.position == VotePosition::StrongNo)
+            .count();
+        
+        // Rule 2: Affirmative Majority (>= 3 Yes AND Yes > No)
+        if yes_count >= 3 && yes_count > no_count {
             return VotingOutcome::Approved(0.0); // Placeholder for aggregated size
         }
         
-        // Rule 3: Split decision = highest confidence wins
-        if self.is_split() {
+        // Rule 2.5: Symmetric Rejection (>= 3 No AND No > Yes)
+        if no_count >= 3 && no_count > yes_count {
+            return VotingOutcome::Rejected;
+        }
+        
+        // Rule 3: Split decision or lack of majority = highest confidence wins
+        if yes_count > 0 || no_count > 0 {
             return VotingOutcome::DeferToHighestConfidence;
         }
         
-        // Rule 4: Tie = defer to Pippo-Omega (meta-learner)
-        return VotingOutcome::DeferToOmega;
+        // Rule 4: Tie/Inactivity = defer to Pippo-Omega (meta-learner)
+        VotingOutcome::DeferToOmega
     }
 
     fn has_strong_no(&self) -> bool {

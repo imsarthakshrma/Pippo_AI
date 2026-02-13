@@ -52,3 +52,20 @@ pub struct ThinkingLog {
     /// Timestamp of when the log was generated.
     pub created_at: DateTime<Utc>,
 }
+
+/// Records capital redistribution between agents within the colony.
+#[derive(Debug, FromRow, Serialize, Deserialize)]
+pub struct CapitalTransfer {
+    /// Unique identifier for the transfer.
+    pub id: String,
+    /// Agent ID sending the capital.
+    pub from_agent: String,
+    /// Agent ID receiving the capital.
+    pub to_agent: String,
+    /// Amount transferred in cents (to prevent floating-point errors).
+    pub amount: i64,
+    /// The reason for the redistribution (e.g., "Performance Reward", "Risk Rebalancing").
+    pub reason: String,
+    /// Timestamp of the transfer.
+    pub timestamp: DateTime<Utc>,
+}

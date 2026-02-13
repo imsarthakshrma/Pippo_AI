@@ -24,12 +24,13 @@ impl BlogGenerator {
         agent_id: &str,
         events: DayEvents,
     ) -> Result<String> {
-        let system_prompt = match agent_id {
-            "Alpha" => ALPHA_SYSTEM_PROMPT,
-            "Beta" => BETA_SYSTEM_PROMPT,
-            "Gamma" => GAMMA_SYSTEM_PROMPT,
-            "Delta" => DELTA_SYSTEM_PROMPT,
-            _ => OMEGA_SYSTEM_PROMPT,
+        let system_prompt = match agent_id.to_lowercase().as_str() {
+            "alpha" => ALPHA_SYSTEM_PROMPT,
+            "beta" => BETA_SYSTEM_PROMPT,
+            "gamma" => GAMMA_SYSTEM_PROMPT,
+            "delta" => DELTA_SYSTEM_PROMPT,
+            "omega" => OMEGA_SYSTEM_PROMPT,
+            _ => return Err(anyhow::anyhow!("Unrecognized agent_id: {}", agent_id)),
         };
 
         let user_prompt = format!(
@@ -54,7 +55,7 @@ impl BlogGenerator {
         let response = self.client.send_request(&request).await?;
         let blog_content = response.content.first()
             .and_then(|c| c.as_text())
-            .unwrap_or("Failed to generate blog content")
+            .ok_or_else(|| anyhow::anyhow!("Claude failed to generate blog content (empty response)"))?
             .to_string();
             
         Ok(blog_content)

@@ -52,6 +52,7 @@ impl Default for TradeReward {
 }
 
 /// Rewards agents for achieving long-term objectives and survival milestones.
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MilestoneReward {
     /// Bonus for reaching $100 balance.
     pub reached_100: f64,
@@ -87,6 +88,7 @@ impl Default for MilestoneReward {
 }
 
 /// Penalties applied when an agent enters a state of significant risk or failure.
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SurvivalPenalty {
     /// Heavy penalty when balance drops below 10% of initial stake.
     pub near_death: f64,
