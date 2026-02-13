@@ -1,0 +1,696 @@
+    Checking pippo v0.1.0 (/home/imsarthakshrma/Projects/Pippo)
+warning: unused import: `Subscriber`
+ --> src/monitoring.rs:6:22
+  |
+6 | use tracing::{Level, Subscriber};
+  |                      ^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `tracing::info`
+ --> src/colony/colony_manager.rs:6:5
+  |
+6 | use tracing::info;
+  |     ^^^^^^^^^^^^^
+
+warning: unused import: `ContentBlock`
+ --> src/blog/generator.rs:2:59
+  |
+2 | ...t, Message, ContentBlock};
+  |                ^^^^^^^^^^^^
+
+warning: unused import: `serde_json::Value`
+ --> src/python_bridge/rl_bridge.rs:6:5
+  |
+6 | use serde_json::Value;
+  |     ^^^^^^^^^^^^^^^^^
+
+warning: field `api_key` is never read
+  --> src/claude/client.rs:12:5
+   |
+10 | pub struct ClaudeClient {
+   |            ------------ field in this struct
+11 |     client: reqwest::Client,
+12 |     api_key: String,
+   |     ^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `consensus_count` and `is_split` are never used
+   --> src/colony/voting_protocol.rs:123:8
+    |
+ 81 | impl VotingRound {
+    | ---------------- methods in this implementation
+...
+123 |     fn consensus_count(&self) -> usize {
+    |        ^^^^^^^^^^^^^^^
+...
+129 |     fn is_split(&self) -> bool {
+    |        ^^^^^^^^
+
+warning: field `client` is never read
+ --> src/backtesting/data_sources/noaa_scraper.rs:8:5
+  |
+7 | pub struct NOAAHistoricalScraper {
+  |            --------------------- field in this struct
+8 |     client: Client,
+  |     ^^^^^^
+
+warning: field `client` is never read
+ --> src/backtesting/data_sources/sports_scraper.rs:8:5
+  |
+7 | pub struct SportsHistoricalScraper {
+  |            ----------------------- field in this struct
+8 |     client: Client,
+  |     ^^^^^^
+
+warning: field `client` is never read
+ --> src/backtesting/data_sources/crypto_scraper.rs:8:5
+  |
+7 | pub struct CryptoHistoricalScraper {
+  |            ----------------------- field in this struct
+8 |     client: Client,
+  |     ^^^^^^
+
+warning: field `client` is never read
+ --> src/backtesting/data_sources/sentiment_scraper.rs:7:5
+  |
+6 | pub struct SentimentHistoricalScraper {
+  |            -------------------------- field in this struct
+7 |     client: Client,
+  |     ^^^^^^
+
+warning: field `db` is never read
+  --> src/backtesting/rl_trainer.rs:10:5
+   |
+ 9 | pub struct RlTrainer {
+   |            --------- field in this struct
+10 |     db: DbManager,
+   |     ^^
+
+warning: `pippo` (lib) generated 11 warnings (run `cargo fix --lib -p pippo` to apply 4 suggestions)
+warning: unused import: `executor::TradeExecutor`
+  --> src/trading/mod.rs:12:9
+   |
+12 | pub use executor::TradeExecutor;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `analyzer::MarketAnalyzer`
+  --> src/trading/mod.rs:13:9
+   |
+13 | pub use analyzer::MarketAnalyzer;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `Subscriber`
+ --> src/monitoring.rs:6:22
+  |
+6 | use tracing::{Level, Subscriber};
+  |                      ^^^^^^^^^^
+
+warning: method `as_text` is never used
+  --> src/claude/types.rs:58:12
+   |
+57 | impl ContentBlock {
+   | ----------------- method in this implementation
+58 |     pub fn as_text(&self) -> Option<&st...
+   |            ^^^^^^^
+
+warning: fields `id`, `stop_reason`, `stop_sequence`, and `usage` are never read
+  --> src/claude/types.rs:70:9
+   |
+68 | pub struct ClaudeResponse {
+   |            -------------- fields in this struct
+69 |     /// Unique identifier for the r...
+70 |     pub id: String,
+   |         ^^
+...
+76 |     pub stop_reason: Option<String>,
+   |         ^^^^^^^^^^^
+77 |     /// The sequence that triggered...
+78 |     pub stop_sequence: Option<String>,
+   |         ^^^^^^^^^^^^^
+79 |     /// Token usage statistics for ...
+80 |     pub usage: Usage,
+   |         ^^^^^
+   |
+   = note: `ClaudeResponse` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `input_tokens` and `output_tokens` are never read
+  --> src/claude/types.rs:85:9
+   |
+84 | pub struct Usage {
+   |            ----- fields in this struct
+85 |     pub input_tokens: usize,
+   |         ^^^^^^^^^^^^
+86 |     pub output_tokens: usize,
+   |         ^^^^^^^^^^^^^
+   |
+   = note: `Usage` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: methods `save_trade` and `save_thinking_log` are never used
+  --> src/db/manager.rs:26:18
+   |
+12 | impl DbManager {
+   | -------------- methods in this implementation
+...
+26 |     pub async fn save_trade(&self, trad...
+   |                  ^^^^^^^^^^
+...
+42 |     pub async fn save_thinking_log(&sel...
+   |                  ^^^^^^^^^^^^^^^^^
+
+warning: struct `Trade` is never constructed
+ --> src/db/schema.rs:7:12
+  |
+7 | pub struct Trade {
+  |            ^^^^^
+
+warning: struct `MarketSnapshot` is never constructed
+  --> src/db/schema.rs:26:12
+   |
+26 | pub struct MarketSnapshot {
+   |            ^^^^^^^^^^^^^^
+
+warning: struct `ThinkingLog` is never constructed
+  --> src/db/schema.rs:41:12
+   |
+41 | pub struct ThinkingLog {
+   |            ^^^^^^^^^^^
+
+warning: struct `CapitalTransfer` is never constructed
+  --> src/db/schema.rs:58:12
+   |
+58 | pub struct CapitalTransfer {
+   |            ^^^^^^^^^^^^^^^
+
+warning: field `rationale` is never read
+  --> src/trading/analyzer.rs:79:9
+   |
+71 | pub struct AnalysisResult {
+   |            -------------- field in this struct
+...
+79 |     pub rationale: String,
+   |         ^^^^^^^^^
+   |
+   = note: `AnalysisResult` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `polymarket` and `monitoring` are never read
+  --> src/config.rs:8:9
+   |
+ 6 | pub struct PippoConfig {
+   |            ----------- fields in this struct
+ 7 |     pub claude: ClaudeConfig,
+ 8 |     pub polymarket: PolymarketConfig,
+   |         ^^^^^^^^^^
+ 9 |     pub trading: TradingConfig,
+10 |     pub monitoring: MonitoringConfig,
+   |         ^^^^^^^^^^
+   |
+   = note: `PippoConfig` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: fields `model`, `max_tokens`, and `thinking_budget_complex` are never read
+  --> src/config.rs:16:9
+   |
+14 | pub struct ClaudeConfig {
+   |            ------------ fields in this struct
+15 |     pub api_key: String,
+16 |     pub model: String,
+   |         ^^^^^
+17 |     pub max_tokens: usize,
+   |         ^^^^^^^^^^
+18 |     pub thinking_budget_default: usize,
+19 |     pub thinking_budget_complex: usize,
+   |         ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `ClaudeConfig` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: fields `api_key`, `secret`, and `passphrase` are never read
+  --> src/config.rs:24:9
+   |
+23 | pub struct PolymarketConfig {
+   |            ---------------- fields in this struct
+24 |     pub api_key: String,
+   |         ^^^^^^^
+25 |     pub secret: String,
+   |         ^^^^^^
+26 |     pub passphrase: String,
+   |         ^^^^^^^^^^
+   |
+   = note: `PolymarketConfig` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: fields `log_level` and `save_thinking_logs` are never read
+  --> src/config.rs:40:9
+   |
+39 | pub struct MonitoringConfig {
+   |            ---------------- fields in this struct
+40 |     pub log_level: String,
+   |         ^^^^^^^^^
+41 |     pub save_thinking_logs: bool,
+   |         ^^^^^^^^^^^^^^^^^^
+   |
+   = note: `MonitoringConfig` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: field `total_initial_capital` is never read
+  --> src/logic.rs:12:9
+   |
+ 8 | pub struct RlSystem {
+   |            -------- field in this struct
+...
+12 |     pub total_initial_capital: f64,
+   |         ^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `process_milestones` is never used
+  --> src/logic.rs:62:12
+   |
+15 | impl RlSystem {
+   | ------------- method in this implementation
+...
+62 |     pub fn process_milestones(&mut self...
+   |            ^^^^^^^^^^^^^^^^^^
+
+warning: methods `description`, `min_edge`, `kelly_fraction`, and `adjust_analysis` are never used
+  --> src/colony/traits.rs:14:8
+   |
+10 | pub trait TradingPersonality: Send + Sy...
+   |           ------------------ methods in this trait
+...
+14 |     fn description(&self) -> &str;
+   |        ^^^^^^^^^^^
+...
+17 |     fn min_edge(&self) -> f64;
+   |        ^^^^^^^^
+18 |     /// The fraction of the Kelly Crite...
+19 |     fn kelly_fraction(&self) -> f64;
+   |        ^^^^^^^^^^^^^^
+...
+25 |     async fn adjust_analysis(&self, ana...
+   |              ^^^^^^^^^^^^^^^
+
+warning: field `pool` is never read
+  --> src/colony/colony_manager.rs:11:5
+   |
+ 9 | pub struct ColonyManager {
+   |            ------------- field in this struct
+10 |     agents: Vec<Arc<dyn...
+11 |     pool: SqlitePool,
+   |     ^^^^
+
+warning: methods `submit_vote` and `get_colony_trades` are never used
+  --> src/colony/colony_manager.rs:35:18
+   |
+14 | impl ColonyManager {
+   | ------------------ methods in this implementation
+...
+35 |     pub async fn submit_vote(&self, age...
+   |                  ^^^^^^^^^^^
+...
+58 |     pub async fn get_colony_trades(&sel...
+   |                  ^^^^^^^^^^^^^^^^^
+
+warning: struct `VotingRound` is never constructed
+  --> src/colony/voting_protocol.rs:10:12
+   |
+10 | pub struct VotingRound {
+   |            ^^^^^^^^^^^
+
+warning: enum `VoteTrigger` is never used
+  --> src/colony/voting_protocol.rs:25:10
+   |
+25 | pub enum VoteTrigger {
+   |          ^^^^^^^^^^^
+
+warning: struct `Vote` is never constructed
+  --> src/colony/voting_protocol.rs:38:12
+   |
+38 | pub struct Vote {
+   |            ^^^^
+
+warning: enum `VotePosition` is never used
+  --> src/colony/voting_protocol.rs:53:10
+   |
+53 | pub enum VotePosition {
+   |          ^^^^^^^^^^^^
+
+warning: enum `VotingOutcome` is never used
+  --> src/colony/voting_protocol.rs:68:10
+   |
+68 | pub enum VotingOutcome {
+   |          ^^^^^^^^^^^^^
+
+warning: methods `resolve`, `has_strong_no`, `consensus_count`, and `is_split` are never used
+   --> src/colony/voting_protocol.rs:87:12
+    |
+ 81 | impl VotingRound {
+    | ---------------- methods in this implementation
+...
+ 87 |     pub fn resolve(&self) -> VotingOut...
+    |            ^^^^^^^
+...
+119 |     fn has_strong_no(&self) -> bool {
+    |        ^^^^^^^^^^^^^
+...
+123 |     fn consensus_count(&self) -> usize {
+    |        ^^^^^^^^^^^^^^^
+...
+129 |     fn is_split(&self) -> bool {
+    |        ^^^^^^^^
+
+warning: struct `BlogGenerator` is never constructed
+ --> src/blog/generator.rs:9:12
+  |
+9 | pub struct BlogGenerator {
+  |            ^^^^^^^^^^^^^
+
+warning: associated items `new` and `generate_daily_blog` are never used
+  --> src/blog/generator.rs:15:12
+   |
+13 | impl BlogGenerator {
+   | ------------------ associated items in this implementation
+14 |     /// Creates a new `BlogGenerator` ...
+15 |     pub fn new(api_key: String) -> Self {
+   |            ^^^
+...
+22 |     pub async fn generate_daily_blog(
+   |                  ^^^^^^^^^^^^^^^^^^^
+
+warning: struct `DayEvents` is never constructed
+  --> src/blog/generator.rs:66:12
+   |
+66 | pub struct DayEvents {
+   |            ^^^^^^^^^
+
+warning: constant `ALPHA_SYSTEM_PROMPT` is never used
+ --> src/blog/prompts.rs:1:11
+  |
+1 | pub const ALPHA_SYSTEM_PROMPT: &str = r#"
+  |           ^^^^^^^^^^^^^^^^^^^
+
+warning: constant `BETA_SYSTEM_PROMPT` is never used
+  --> src/blog/prompts.rs:34:11
+   |
+34 | pub const BETA_SYSTEM_PROMPT: &str = r#"
+   |           ^^^^^^^^^^^^^^^^^^
+
+warning: constant `GAMMA_SYSTEM_PROMPT` is never used
+  --> src/blog/prompts.rs:63:11
+   |
+63 | pub const GAMMA_SYSTEM_PROMPT: &str = r#"
+   |           ^^^^^^^^^^^^^^^^^^^
+
+warning: constant `DELTA_SYSTEM_PROMPT` is never used
+  --> src/blog/prompts.rs:92:11
+   |
+92 | pub const DELTA_SYSTEM_PROMPT: &str = r#"
+   |           ^^^^^^^^^^^^^^^^^^^
+
+warning: constant `OMEGA_SYSTEM_PROMPT` is never used
+   --> src/blog/prompts.rs:120:11
+    |
+120 | pub const OMEGA_SYSTEM_PROMPT: &str = r#"
+    |           ^^^^^^^^^^^^^^^^^^^
+
+warning: struct `BlogWriter` is never constructed
+ --> src/blog/markdown_writer.rs:6:12
+  |
+6 | pub struct BlogWriter;
+  |            ^^^^^^^^^^
+
+warning: associated function `write_entry` is never used
+ --> src/blog/markdown_writer.rs:9:12
+  |
+8 | impl BlogWriter {
+  | --------------- associated function in this implementation
+9 |     pub fn write_entry(agent_name: &str,...
+  |            ^^^^^^^^^^^
+
+warning: struct `PolymarketHistoricalScraper` is never constructed
+ --> src/backtesting/data_sources/polymarket_scraper.rs:8:12
+  |
+8 | pub struct PolymarketHistoricalScraper {
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: constant `MAX_OFFSET` is never used
+  --> src/backtesting/data_sources/polymarket_scraper.rs:14:7
+   |
+14 | const MAX_OFFSET: u32 = 5000;
+   |       ^^^^^^^^^^
+
+warning: associated items `new` and `fetch_historical_markets` are never used
+  --> src/backtesting/data_sources/polymarket_scraper.rs:18:12
+   |
+16 | impl PolymarketHistoricalScraper {
+   | -------------------------------- associated items in this implementation
+17 |     /// Creates a new `PolymarketHistor...
+18 |     pub fn new() -> Self {
+   |            ^^^
+...
+31 |     pub async fn fetch_historical_markets(
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `HistoricalMarket` is never constructed
+  --> src/backtesting/data_sources/polymarket_scraper.rs:99:12
+   |
+99 | pub struct HistoricalMarket {
+   |            ^^^^^^^^^^^^^^^^
+
+warning: function `deserialize_nullable_f64_from_str` is never used
+   --> src/backtesting/data_sources/polymarket_scraper.rs:123:4
+    |
+123 | fn deserialize_nullable_f64_from_str<'d...
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `NOAAHistoricalScraper` is never constructed
+ --> src/backtesting/data_sources/noaa_scraper.rs:7:12
+  |
+7 | pub struct NOAAHistoricalScraper {
+  |            ^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `new` and `fetch_weather_for_date` are never used
+  --> src/backtesting/data_sources/noaa_scraper.rs:15:12
+   |
+13 | impl NOAAHistoricalScraper {
+   | -------------------------- associated items in this implementation
+14 |     /// Creates a new `NOAAHistoricalScrap...
+15 |     pub fn new(api_token: String) -> Self {
+   |            ^^^
+...
+25 |     pub async fn fetch_weather_for_date(
+   |                  ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `WeatherData` is never constructed
+  --> src/backtesting/data_sources/noaa_scraper.rs:42:12
+   |
+42 | pub struct WeatherData {
+   |            ^^^^^^^^^^^
+
+warning: struct `SportsHistoricalScraper` is never constructed
+ --> src/backtesting/data_sources/sports_scraper.rs:7:12
+  |
+7 | pub struct SportsHistoricalScraper {
+  |            ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `new` and `fetch_game_results` are never used
+  --> src/backtesting/data_sources/sports_scraper.rs:13:12
+   |
+11 | impl SportsHistoricalScraper {
+   | ---------------------------- associated items in this implementation
+12 |     /// Creates a new `SportsHist...
+13 |     pub fn new() -> Self {
+   |            ^^^
+...
+22 |     pub async fn fetch_game_results(
+   |                  ^^^^^^^^^^^^^^^^^^
+
+warning: struct `GameResult` is never constructed
+  --> src/backtesting/data_sources/sports_scraper.rs:34:12
+   |
+34 | pub struct GameResult {
+   |            ^^^^^^^^^^
+
+warning: struct `CryptoHistoricalScraper` is never constructed
+ --> src/backtesting/data_sources/crypto_scraper.rs:7:12
+  |
+7 | pub struct CryptoHistoricalScraper {
+  |            ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `new` and `fetch_price_history` are never used
+  --> src/backtesting/data_sources/crypto_scraper.rs:13:12
+   |
+11 | impl CryptoHistoricalScraper {
+   | ---------------------------- associated items in this implementation
+12 |     /// Creates a new `CryptoHisto...
+13 |     pub fn new() -> Self {
+   |            ^^^
+...
+22 |     pub async fn fetch_price_history(
+   |                  ^^^^^^^^^^^^^^^^^^^
+
+warning: struct `PricePoint` is never constructed
+  --> src/backtesting/data_sources/crypto_scraper.rs:35:12
+   |
+35 | pub struct PricePoint {
+   |            ^^^^^^^^^^
+
+warning: struct `SentimentHistoricalScraper` is never constructed
+ --> src/backtesting/data_sources/sentiment_scraper.rs:6:12
+  |
+6 | pub struct SentimentHistoricalScraper {
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `new` and `fetch_reddit_sentiment` are never used
+  --> src/backtesting/data_sources/sentiment_scraper.rs:12:12
+   |
+10 | impl SentimentHistoricalScraper {
+   | ------------------------------- associated items in this implementation
+11 |     /// Creates a new `SentimentHisto...
+12 |     pub fn new() -> Self {
+   |            ^^^
+...
+21 |     pub async fn fetch_reddit_sentiment(
+   |                  ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `HistoricalDataCollector` is never constructed
+  --> src/backtesting/data_collector.rs:15:12
+   |
+15 | pub struct HistoricalDataCollector {
+   |            ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: associated items `new`, `collect_full_dataset`, and `classify_market` are never used
+   --> src/backtesting/data_collector.rs:25:12
+    |
+ 23 | impl HistoricalDataCollector {
+    | ---------------------------- associated items in this implementation
+ 24 |     /// Creates a new `HistoricalDataCol...
+ 25 |     pub fn new(noaa_token: String) -> Se...
+    |            ^^^
+...
+ 40 |     pub async fn collect_full_dataset(
+    |                  ^^^^^^^^^^^^^^^^^^^^
+...
+102 |     fn classify_market(&self, question: ...
+    |        ^^^^^^^^^^^^^^^
+
+warning: enum `MarketType` is never used
+   --> src/backtesting/data_collector.rs:119:10
+    |
+119 | pub enum MarketType {
+    |          ^^^^^^^^^^
+
+warning: function `is_sports_market` is never used
+   --> src/backtesting/data_collector.rs:133:4
+    |
+133 | fn is_sports_market(q: &str) -> bool {
+    |    ^^^^^^^^^^^^^^^^
+
+warning: function `extract_location` is never used
+   --> src/backtesting/data_collector.rs:149:4
+    |
+149 | fn extract_location(q: &str) -> Option...
+    |    ^^^^^^^^^^^^^^^^
+
+warning: function `extract_sport` is never used
+   --> src/backtesting/data_collector.rs:157:4
+    |
+157 | fn extract_sport(q: &str) -> Option<St...
+    |    ^^^^^^^^^^^^^
+
+warning: function `extract_asset` is never used
+   --> src/backtesting/data_collector.rs:166:4
+    |
+166 | fn extract_asset(q: &str) -> Option<St...
+    |    ^^^^^^^^^^^^^
+
+warning: function `extract_topic` is never used
+   --> src/backtesting/data_collector.rs:173:4
+    |
+173 | fn extract_topic(q: &str) -> Option<St...
+    |    ^^^^^^^^^^^^^
+
+warning: struct `SimulatedPosition` is never constructed
+  --> src/backtesting/simulator.rs:17:8
+   |
+17 | struct SimulatedPosition {
+   |        ^^^^^^^^^^^^^^^^^
+
+warning: struct `BacktestSimulator` is never constructed
+  --> src/backtesting/simulator.rs:25:12
+   |
+25 | pub struct BacktestSimulator {
+   |            ^^^^^^^^^^^^^^^^^
+
+warning: associated items `new`, `run_simulation`, `calculate_total_return`, `step`, and `resolve_expiring_trades` are never used
+   --> src/backtesting/simulator.rs:39:12
+    |
+ 37 | impl BacktestSimulator {
+    | ---------------------- associated items in this implementation
+ 38 |     /// Creates a new `BacktestSimulator`.
+ 39 |     pub fn new(
+    |            ^^^
+...
+ 62 |     pub async fn run_simulation(&mut se...
+    |                  ^^^^^^^^^^^^^^
+...
+ 78 |     fn calculate_total_return(&self) ->...
+    |        ^^^^^^^^^^^^^^^^^^^^^^
+...
+ 84 |     async fn step(&mut self) -> Result<...
+    |              ^^^^
+...
+194 |     async fn resolve_expiring_trades(&m...
+    |              ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: struct `MockAnalyzer` is never constructed
+ --> src/backtesting/mock_analyzer.rs:7:12
+  |
+7 | pub struct MockAnalyzer;
+  |            ^^^^^^^^^^^^
+
+warning: struct `BacktestReport` is never constructed
+ --> src/backtesting/metrics.rs:6:12
+  |
+6 | pub struct BacktestReport {
+  |            ^^^^^^^^^^^^^^
+
+warning: struct `MetricsTracker` is never constructed
+  --> src/backtesting/metrics.rs:24:12
+   |
+24 | pub struct MetricsTracker {
+   |            ^^^^^^^^^^^^^^
+
+warning: associated items `new`, `track_trade`, and `generate_reports` are never used
+  --> src/backtesting/metrics.rs:30:12
+   |
+28 | impl MetricsTracker {
+   | ------------------- associated items in this implementation
+29 |     /// Creates a new `MetricsTracker`.
+30 |     pub fn new() -> Self {
+   |            ^^^
+...
+37 |     pub fn track_trade(&mut self, agent...
+   |            ^^^^^^^^^^^
+...
+58 |     pub fn generate_reports(&self) -> V...
+   |            ^^^^^^^^^^^^^^^^
+
+warning: struct `RlTrainer` is never constructed
+ --> src/backtesting/rl_trainer.rs:9:12
+  |
+9 | pub struct RlTrainer {
+  |            ^^^^^^^^^
+
+warning: associated items `new` and `train_on_history` are never used
+  --> src/backtesting/rl_trainer.rs:15:12
+   |
+13 | impl RlTrainer {
+   | -------------- associated items in this implementation
+14 |     /// Creates a new `RlTrainer` insta...
+15 |     pub fn new(db: DbManager) -> Self {
+   |            ^^^
+...
+20 |     pub async fn train_on_history(&self...
+   |                  ^^^^^^^^^^^^^^^^
+
+warning: `pippo` (bin "pippo") generated 73 warnings (3 duplicates) (run `cargo fix --bin "pippo" -p pippo` to apply 3 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.25s

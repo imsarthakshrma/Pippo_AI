@@ -26,5 +26,5 @@ pub fn analyze_backtest(db_path: &str, agent_id: &str) -> Result<AnalysisReport>
             .extract()?;
         Ok(report)
     })
-    .map_err(|e| anyhow::anyhow!("Python Analytics error: {}", e))
+    .map_err(|e: pyo3::PyErr| anyhow::anyhow!("Python Analytics error: {}", e))
 }

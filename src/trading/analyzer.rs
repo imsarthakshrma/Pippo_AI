@@ -1,11 +1,14 @@
 use crate::claude::{ClaudeClient, ClaudeRequest, Message, ContentBlock, ThinkingConfig};
 use crate::market::Market;
 use anyhow::Result;
+use async_trait::async_trait;
+
+#[async_trait]
+pub trait MarketAnalyzerTrait: Send + Sync {
+    async fn analyze_markets(&self, markets: &[Market], budget: usize) -> Result<Vec<AnalysisResult>>;
+}
 
 /// Responsible for analyzing prediction markets using Claude's reasoning capabilities.
-/// 
-/// The `MarketAnalyzer` sends market data to Claude with an extended thinking budget 
-/// to receive probabilistic estimates and fair value calculations.
 pub struct MarketAnalyzer {
     client: ClaudeClient,
 }
@@ -17,12 +20,12 @@ impl MarketAnalyzer {
             client: ClaudeClient::new(api_key),
         }
     }
+}
 
-    /// Analyzes a list of markets and returns fair value estimates.
-    ///
-    /// The `budget` parameter determines how many tokens Claude can use for 
-    /// internal reasoning before delivering the final JSON results.
-    pub async fn analyze_markets(&self, markets: &[Market], budget: usize) -> Result<Vec<AnalysisResult>> {
+#[async_trait]
+impl MarketAnalyzerTrait for MarketAnalyzer {
+    /// Analyzes a list of markets and returns fair value estimates via Claude.
+    async fn analyze_markets(&self, markets: &[Market], budget: usize) -> Result<Vec<AnalysisResult>> {
         let system_prompt = "You are Pippo, an autonomous prediction market trading agent. \
             Your goal is to grow your capital or shut down forever. \
             Analyze the following markets deeply. Identify mispricing (>8% edge). \

@@ -103,6 +103,9 @@ pub struct HistoricalMarket {
     pub question: String,
     /// Detailed description of the market constraints and context.
     pub description: Option<String>,
+    /// The timestamp when the market was created.
+    #[serde(alias = "createdAt")]
+    pub created_at: DateTime<Utc>,
     /// The timestamp when the market resolution was finalized.
     #[serde(alias = "endDate")]
     pub end_date: Option<DateTime<Utc>>,

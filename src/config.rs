@@ -32,6 +32,7 @@ pub struct TradingConfig {
     pub min_edge: f64,
     pub balance_usd: f64,
     pub interval_minutes: u64,
+    pub database_url: String,
 }
 
 #[derive(Debug, Deserialize, Clone)]

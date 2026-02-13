@@ -6,5 +6,6 @@
 pub mod data_sources;
 pub mod data_collector;
 pub mod simulator;
+pub mod mock_analyzer;
 pub mod metrics;
 pub mod rl_trainer;
