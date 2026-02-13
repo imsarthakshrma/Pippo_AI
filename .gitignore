@@ -9,3 +9,4 @@ backtest_results/
 pippo.db
 pippo.db-shm
 pippo.db-wal
+check_output*.txt

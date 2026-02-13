@@ -15,5 +15,5 @@ pub fn analyze_sentiment(texts: Vec<String>) -> Result<f64> {
             .extract()?;
         Ok(score)
     })
-    .map_err(|e| anyhow::anyhow!("Python Sentiment error: {}", e))
+    .map_err(|e: pyo3::PyErr| anyhow::anyhow!("Python Sentiment error: {}", e))
 }

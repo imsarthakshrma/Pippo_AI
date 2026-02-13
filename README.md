@@ -3,8 +3,8 @@
 <!-- Professional Badges -->
 <div align="center">
   <img src="https://img.shields.io/badge/Rust-1.75%2B-orange.svg" alt="Rust" />
-  <img src="https://img.shields.io/badge/Node-v20%2B-green.svg" alt="Node" />
-  <img src="https://img.shields.io/badge/Analysis-Claude--3.5--Sonnet-purple.svg" alt="Claude" />
+  <img src="https://img.shields.io/badge/Python-3.10%2B-blue.svg" alt="Python" />
+  <img src="https://img.shields.io/badge/Analysis-Claude--Sonnet--4.5-purple.svg" alt="Claude" />
   <img src="https://img.shields.io/badge/Database-SQLite-blue.svg" alt="SQLite" />
   <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License" />
 </div>
@@ -13,7 +13,7 @@
 
 **Pippo** is a sophisticated autonomous trading system conceptualized as a **multi-agent colony**. Unlike traditional trading bots, Pippo operates as a collection of five distinct "personalities" that compete, collaborate, and evolve under simulated survival pressure. 
 
-The project leverages **Anthropic's Claude 3.5 Sonnet** (via the `interleaved-thinking` beta) to perform deep, multi-step probabilistic reasoning on world events, ranging from politics and sports to weather and cryptocurrency trends.
+The project uses a **hybrid Rust + Python** architecture — a high-performance Rust core for orchestration, trading, and colony management, with a PyO3 bridge to Python modules for reinforcement learning, sentiment analysis, and backtest analytics.
 
 ---
 
@@ -36,11 +36,14 @@ Pippo manages five concurrent agents, each with its own SQLite-backed balance:
 - **Delta (The Social)**: Pulse-reader, follows momentum and crowd dynamics.
 - **Omega (The Meta-Learner)**: Observes other agents to synthesize optimal strategies.
 
+Agent votes and trade results are persisted to a shared SQLite database, giving each agent visibility into the colony's collective performance.
+
 ### 2. The Data Pipeline
 The **Backtesting Engine** provides a rigorous trial-by-fire. Autonomous scrapers ingest data from:
 - **Polymarket**: Historical prices, resolution data, and order books.
 - **NOAA**: CDO Web Services for historical weather/forecast validation.
 - **Sports/Social**: ESPN hidden APIs and Reddit sentiment analysis.
+- **Crypto**: Historical cryptocurrency price feeds.
 
 ### 3. Deep Reasoning (Extended Thinking)
 Using the `interleaved-thinking-2025-05-14` beta, Pippo agents perform recursive analysis:
@@ -49,7 +52,24 @@ Using the `interleaved-thinking-2025-05-14` beta, Pippo agents perform recursive
 - **Tool Use**: Query external data to validate assumptions.
 - **Decide**: Resolve on a position and size using the **Kelly Criterion**.
 
-### 4. RL Reward Matrix
+### 4. Backtest Simulator
+Before any agent touches live capital, it must survive the **BacktestSimulator** — a high-speed historical market replayer that:
+- **Replays** historical odds in 10-minute intervals from the SQLite price database.
+- **Orchestrates** all five agents through full analysis → vote → trade cycles using a `MockAnalyzer` (no LLM costs during simulation).
+- **Tracks** per-agent metrics (win rate, raw P/L, trade count) via the `MetricsTracker`.
+- **Resolves** expired markets with case-insensitive outcome matching and calculates payouts.
+- **Enforces** the Death Rule — any agent that hits $0 is permanently removed from the colony.
+
+### 5. Hybrid Rust + Python Architecture
+Pippo bridges high-performance Rust with Python's ML ecosystem via **PyO3**:
+
+| Bridge Module | Purpose |
+|---|---|
+| `rl_bridge` | Calculates RL rewards and suggests optimized position sizes |
+| `analytics_bridge` | Runs backtest analysis and generates performance reports |
+| `sentiment_bridge` | Scores market sentiment from text using transformer models |
+
+### 6. RL Reward Matrix
 Agents are trained (and rewarded) not just on profit, but on:
 - **Edge Validation**: Did the predicted edge match the realized edge?
 - **Risk Compliance**: Did the agent follow its Kelly-sizing rules?
@@ -74,41 +94,64 @@ graph TD
     J --> K[Trade Execution]
     K --> L[SQLite DB]
     L --> M[Experiential Blog]
+
+    subgraph Python Bridge - PyO3
+        N[RL Rewards]
+        O[Sentiment Analysis]
+        P[Backtest Analytics]
+    end
+
+    K --> N
+    A --> O
+    L --> P
+
+    subgraph Backtest Simulator
+        Q[Historical Data] --> R[Price Resolution]
+        R --> S[MockAnalyzer]
+        S --> J
+        R --> T[MetricsTracker]
+    end
 ```
 
 ---
 
-## � Installation & Setup
+## 🚀 Installation & Setup
 
 ### Prerequisites
 - **Rust 1.75+** (Standard target)
+- **Python 3.10+** (For RL, sentiment, and analytics modules)
 - **SQLite3** (Local storage)
-- **Anthropic API Key** (Claude-3-5-Sonnet with Beta access)
+- **Anthropic API Key** (Claude Sonnet 4.5 with Beta access)
 
 ### Setup
-1. **Initialize Project**:
+1. **Clone & Build**:
    ```bash
-   git clone https://github.com/your-username/pippo.git
-   cd pippo
+   git clone https://github.com/imsarthakshrma/Pippo_AI.git
+   cd Pippo_AI
    cargo build
    ```
-2. **Configure Environment**:
+2. **Install Python Dependencies**:
+   ```bash
+   pip install -e .
+   ```
+3. **Configure Environment**:
    - Create a `.env` file for sensitive keys:
      ```env
      ANTHROPIC_API_KEY=your_key_here
-     DATABASE_URL=sqlite:pippo.db
      ```
    - Or update `config.toml` for agent parameters (DO NOT store secrets here):
      ```toml
      [trading]
-     balance_usd = 1000.0
-     max_kelly_fraction = 0.2
+     balance_usd = 12.0
+     max_kelly_fraction = 0.06
+     min_edge = 0.08
+     database_url = "sqlite:pippo.db"
      ```
    > [!WARNING]
-   > Never commit `config.toml` if it contains sensitive keys. Always prefer `.env` for API keys and database URLs.
-3. **Run Backtest**:
+   > Never commit `config.toml` if it contains sensitive keys. Always prefer `.env` for API keys.
+4. **Run Backtest**:
    ```bash
-   cargo run --bin poc_collection -- --days 30
+   cargo run
    ```
 
 ---

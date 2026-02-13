@@ -20,6 +20,7 @@ mod backtesting;
 use anyhow::Result;
 use tokio::time::{self, Duration};
 use tracing::{error, info};
+use crate::trading::analyzer::MarketAnalyzerTrait;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -31,8 +32,11 @@ async fn main() -> Result<()> {
     // 1. Load configuration
     let cfg = crate::config::load()?;
     
-    // 2. Initialize components
-    let colony_manager = colony::colony_manager::ColonyManager::new();
+    // 2. Initialize database
+    let db_manager = db::DbManager::new(&cfg.trading.database_url).await?;
+    
+    // 3. Initialize components
+    let colony_manager = colony::colony_manager::ColonyManager::new(db_manager.pool().clone());
     let agent_names: Vec<String> = colony_manager.agents().iter().map(|a| a.name().to_string()).collect();
     
     let analyzer = trading::analyzer::MarketAnalyzer::new(cfg.claude.api_key.clone());

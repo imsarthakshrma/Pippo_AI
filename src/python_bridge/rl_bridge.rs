@@ -22,7 +22,7 @@ pub fn calculate_reward(
             .extract()?;
         Ok(reward)
     })
-    .map_err(|e| anyhow::anyhow!("Python RL error: {}", e))
+    .map_err(|e: pyo3::PyErr| anyhow::anyhow!("Python RL error: {}", e))
 }
 
 /// Calls the Python RL system to suggest an optimized position size.
@@ -36,5 +36,5 @@ pub fn suggest_position_size(market_id: &str, current_balance: f64) -> Result<f6
             .extract()?;
         Ok(size)
     })
-    .map_err(|e| anyhow::anyhow!("Python RL error: {}", e))
+    .map_err(|e: pyo3::PyErr| anyhow::anyhow!("Python RL error: {}", e))
 }
