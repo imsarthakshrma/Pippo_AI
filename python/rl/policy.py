@@ -10,5 +10,5 @@ class PippoActorCriticPolicy(ActorCriticPolicy):
         super(PippoActorCriticPolicy, self).__init__(
             *args,
             **kwargs,
-            net_arch=dict(pi=[128, 128], qf=[128, 128])
+            net_arch=dict(pi=[128, 128], vf=[128, 128])
         )

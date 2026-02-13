@@ -5,6 +5,14 @@ class SentimentAnalyzer:
     def __init__(self):
         # Placeholder for model loading
         # self.pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
+        self.enabled = True
+
+    def enable(self):
+        """Explicitly enables the sentiment analyzer."""
+        self.enabled = True
+
+    def disable(self):
+        """Explicitly disables the sentiment analyzer."""
         self.enabled = False
 
     def get_sentiment_score(self, texts: list[str]) -> float:

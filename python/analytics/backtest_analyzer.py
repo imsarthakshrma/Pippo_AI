@@ -18,10 +18,13 @@ def run_analysis(csv_path: str, agent_id: str) -> dict:
         if df.empty:
             return {"error": "No data found"}
             
-        # Filter by agent
+        # Filter by agent and sort chronologically
         agent_df = df[df['agent_id'] == agent_id].copy()
         if agent_df.empty:
             return {"error": f"No data for agent {agent_id}"}
+            
+        agent_df['timestamp'] = pd.to_datetime(agent_df['timestamp'])
+        agent_df.sort_values('timestamp', inplace=True)
             
         # Calculate daily returns
         agent_df['returns'] = agent_df['profit_loss_usd'] / agent_df['initial_balance']
@@ -35,10 +38,20 @@ def run_analysis(csv_path: str, agent_id: str) -> dict:
         drawdown = (cumulative_returns - peak) / peak
         max_drawdown = drawdown.min()
         
-        # 3. Sharpe Ratio (assumed daily)
+        # 3. Annualized Sharpe Ratio
         avg_return = agent_df['returns'].mean()
         std_return = agent_df['returns'].std()
-        sharpe = (avg_return / std_return) * np.sqrt(252) if std_return != 0 else 0
+        
+        if std_return != 0:
+            # Empirical annualization based on trade frequency
+            days_diff = (agent_df['timestamp'].max() - agent_df['timestamp'].min()).days
+            if days_diff > 0:
+                trades_per_year = len(agent_df) / (days_diff / 365.0)
+                sharpe = (avg_return / std_return) * np.sqrt(trades_per_year)
+            else:
+                sharpe = (avg_return / std_return) * np.sqrt(252) # Fallback to default
+        else:
+            sharpe = 0.0
         
         return {
             "agent_id": agent_id,

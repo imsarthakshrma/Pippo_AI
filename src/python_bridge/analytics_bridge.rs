@@ -7,7 +7,7 @@ use anyhow::Result;
 use serde::Deserialize;
 
 /// Performance report returned from Python analytics.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, FromPyObject)]
 pub struct AnalysisReport {
     pub agent_id: String,
     pub win_rate: f64,

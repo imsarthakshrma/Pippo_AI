@@ -22,9 +22,13 @@ def train_offline(data_path: str, model_save_path: str, total_timesteps: int = 1
     # Placeholder: Use a standard environment for structure demo
     env = gym.make("CartPole-v1") 
 
+    # Ensure tensorboard directory exists
+    tensorboard_log = "./data/logs/"
+    os.makedirs(tensorboard_log, exist_ok=True)
+
     try:
         # 2. Initialize model
-        model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./data/logs/")
+        model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=tensorboard_log)
 
         # 3. Setup checkpointing
         checkpoint_callback = CheckpointCallback(
