@@ -69,7 +69,20 @@ Pippo bridges high-performance Rust with Python's ML ecosystem via **PyO3**:
 | `analytics_bridge` | Runs backtest analysis and generates performance reports |
 | `sentiment_bridge` | Scores market sentiment from text using transformer models |
 
-### 6. RL Reward Matrix
+### 6. 🐥 Pippo Chat (CLI)
+Talk directly to the colony! Each agent has a Doraemon-inspired personality:
+```bash
+cargo run -- --chat
+```
+- **Pippo-Alpha** 🔥: Brave, bold, sometimes reckless. *"I'm going for it!"*
+- **Pippo-Beta** 🛡️: Careful, patient, sweet. *"Let me think more..."*
+- **Pippo-Gamma** 😏: Contrarian, skeptical, grumpy. *"Everyone's wrong!"*
+- **Pippo-Delta** 🤝: Social, trusting, follows trends. *"Everyone's doing it!"*
+- **Pippo-Omega** 🦉: Wise, observant, humble. *"I'm still learning..."*
+
+Commands: `/switch alpha`, `/status`, `/help`, `/quit`
+
+### 7. RL Reward Matrix
 Agents are trained (and rewarded) not just on profit, but on:
 - **Edge Validation**: Did the predicted edge match the realized edge?
 - **Risk Compliance**: Did the agent follow its Kelly-sizing rules?
@@ -95,7 +108,7 @@ graph TD
     K --> L[SQLite DB]
     L --> M[Experiential Blog]
 
-    subgraph Python Bridge - PyO3
+    subgraph "Python Bridge - PyO3"
         N[RL Rewards]
         O[Sentiment Analysis]
         P[Backtest Analytics]
@@ -105,11 +118,17 @@ graph TD
     A --> O
     L --> P
 
-    subgraph Backtest Simulator
+    subgraph "Backtest Simulator"
         Q[Historical Data] --> R[Price Resolution]
         R --> S[MockAnalyzer]
         S --> J
         R --> T[MetricsTracker]
+    end
+
+    subgraph "CLI Chat"
+        U[User Input] --> V[Personality Prompt]
+        V --> F
+        F --> W["Pippo Response 🐥"]
     end
 ```
 
@@ -135,12 +154,20 @@ graph TD
    pip install -e .
    ```
 3. **Configure Environment**:
-   - Create a `.env` file for sensitive keys:
+   - Create a **`.env` file in the project root** (`Pippo_AI/.env`) for API keys:
      ```env
-     ANTHROPIC_API_KEY=your_key_here
+     # Pippo_AI/.env — loaded automatically at startup via dotenv
+     ANTHROPIC_API_KEY=your_anthropic_key_here
      ```
-   - Or update `config.toml` for agent parameters (DO NOT store secrets here):
+   - Edit `config.toml` (also in the project root) for agent parameters:
      ```toml
+     [claude]
+     api_key = "${ANTHROPIC_API_KEY}"   # or paste directly (NOT recommended)
+     model = "claude-sonnet-4-5-20250929"
+     max_tokens = 16384
+     thinking_budget_default = 10000
+     thinking_budget_complex = 30000
+
      [trading]
      balance_usd = 12.0
      max_kelly_fraction = 0.06
@@ -148,10 +175,19 @@ graph TD
      database_url = "sqlite:pippo.db"
      ```
    > [!WARNING]
-   > Never commit `config.toml` if it contains sensitive keys. Always prefer `.env` for API keys.
-4. **Run Backtest**:
+   > **Both `.env` and `config.toml` are in `.gitignore`** and will not be committed. Never add API keys to tracked files.
+
+   > [!TIP]
+   > Environment variables prefixed with `PIPPO_` override `config.toml` values.
+   > Example: `PIPPO_CLAUDE__API_KEY=sk-...` overrides `[claude] api_key`.
+
+4. **Run Trading Agent**:
    ```bash
    cargo run
+   ```
+5. **Chat with Pippo** 🐥:
+   ```bash
+   cargo run -- --chat
    ```
 
 ---

@@ -26,6 +26,9 @@ use crate::trading::analyzer::MarketAnalyzerTrait;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    // Load .env file if present (for API keys and secrets)
+    dotenv::dotenv().ok();
+
     // Initialize logging via the monitoring module
     monitoring::init_telemetry()?;
 
