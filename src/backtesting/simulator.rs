@@ -67,11 +67,18 @@ impl BacktestSimulator {
         
         while self.current_time < self.end_time {
             if self.rl.check_death_rule() {
-                warn!("Colony collapsed during backtest at {}", self.current_time);
+                warn!("Colony collapsed during backtest at {}. Settling {} open positions at entry cost.", self.current_time, self.open_positions.len());
+                self.force_settle_open_positions().await?;
                 break;
             }
             self.step().await?;
             self.current_time = self.current_time + Duration::minutes(10);
+        }
+
+        // Settle any positions still open after the time window expires
+        if !self.open_positions.is_empty() {
+            warn!("Simulation ended with {} open positions. Settling at entry cost.", self.open_positions.len());
+            self.force_settle_open_positions().await?;
         }
 
         info!("Simulation completed. Total Return: {:.2}%", self.calculate_total_return());
@@ -223,6 +230,41 @@ impl BacktestSimulator {
                 }
             }
             i += 1;
+        }
+        Ok(())
+    }
+
+    /// Force-settles all remaining open positions at entry cost.
+    ///
+    /// Used when the colony collapses (Death Rule) or the simulation window ends
+    /// with positions still open. Returns locked capital to each agent and records
+    /// each forced settlement as a zero-profit trade.
+    async fn force_settle_open_positions(&mut self) -> Result<()> {
+        while let Some(pos) = self.open_positions.pop() {
+            // Try to get the current mark from historical_odds; fall back to entry_price
+            let mark = sqlx::query_as::<_, (f64,)>(
+                "SELECT price FROM historical_odds WHERE market_id = ? AND timestamp <= ? ORDER BY timestamp DESC LIMIT 1"
+            )
+            .bind(&pos.market_id)
+            .bind(self.current_time)
+            .fetch_optional(&self.pool)
+            .await?
+            .map(|(p,)| p)
+            .unwrap_or(pos.entry_price);
+
+            // Mark-to-market P/L: what the position is worth now vs what was paid
+            let current_value = pos.size * (mark / pos.entry_price);
+            let profit = current_value - pos.size;
+
+            warn!(
+                "Force-settled {} position on {} for agent {} | Entry: {:.4} Mark: {:.4} P/L: ${:.2}",
+                if profit >= 0.0 { "profitable" } else { "losing" },
+                pos.market_id, pos.agent_id, pos.entry_price, mark, profit
+            );
+
+            // Return the marked value to the agent's balance
+            self.rl.process_milestones(&pos.agent_id, current_value);
+            self.metrics.track_trade(&pos.agent_id, profit);
         }
         Ok(())
     }
