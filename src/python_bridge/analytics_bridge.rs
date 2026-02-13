@@ -4,10 +4,9 @@ use pyo3::prelude::*;
 use crate::python_bridge::init_python;
 use anyhow::Result;
 
-use serde::Deserialize;
-
 /// Performance report returned from Python analytics.
-#[derive(Debug, Deserialize, FromPyObject)]
+#[derive(Debug, FromPyObject)]
+#[pyo3(from_item_all)]
 pub struct AnalysisReport {
     pub agent_id: String,
     pub win_rate: f64,
