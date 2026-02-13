@@ -1,4 +1,4 @@
-# Pippo: Autonomous Prediction Market Colony 🦀
+# Pippo 🐥: Autonomous Prediction Market Colony
 
 <!-- Professional Badges -->
 <div align="center">
