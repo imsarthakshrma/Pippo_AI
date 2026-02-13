@@ -147,25 +147,31 @@ fn is_sports_market(q: &str) -> bool {
 }
 
 fn extract_location(q: &str) -> Option<String> {
-    if q.contains("NYC") || q.contains("New York") { Some("NYC".to_string()) }
-    else if q.contains("London") { Some("London".to_string()) }
-    else if q.contains("Tokyo") { Some("Tokyo".to_string()) }
+    let q_lower = q.to_lowercase();
+    if q_lower.contains("nyc") || q_lower.contains("new york") { Some("NYC".to_string()) }
+    else if q_lower.contains("london") { Some("London".to_string()) }
+    else if q_lower.contains("tokyo") { Some("Tokyo".to_string()) }
     else { None }
 }
 
 fn extract_sport(q: &str) -> Option<String> {
-    if q.contains("NBA") { Some("NBA".to_string()) }
-    else if q.contains("NFL") { Some("NFL".to_string()) }
+    let q_lower = q.to_lowercase();
+    if q_lower.contains("nba") { Some("NBA".to_string()) }
+    else if q_lower.contains("nfl") { Some("NFL".to_string()) }
+    else if q_lower.contains("mlb") { Some("MLB".to_string()) }
+    else if q_lower.contains("nhl") { Some("NHL".to_string()) }
     else { None }
 }
 
 fn extract_asset(q: &str) -> Option<String> {
-    if q.contains("BTC") || q.contains("Bitcoin") { Some("BTC".to_string()) }
-    else if q.contains("ETH") || q.contains("Ethereum") { Some("ETH".to_string()) }
+    let q_lower = q.to_lowercase();
+    if q_lower.contains("btc") || q_lower.contains("bitcoin") { Some("BTC".to_string()) }
+    else if q_lower.contains("eth") || q_lower.contains("ethereum") { Some("ETH".to_string()) }
     else { None }
 }
 
 fn extract_topic(q: &str) -> Option<String> {
-    if q.contains("Election") { Some("politics".to_string()) }
+    let q_lower = q.to_lowercase();
+    if q_lower.contains("election") || q_lower.contains("president") { Some("politics".to_string()) }
     else { None }
 }

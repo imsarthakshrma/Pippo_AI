@@ -98,14 +98,14 @@ graph TD
      ANTHROPIC_API_KEY=your_key_here
      DATABASE_URL=sqlite:pippo.db
      ```
-   - Or update `config.toml` for agent parameters:
+   - Or update `config.toml` for agent parameters (DO NOT store secrets here):
      ```toml
-     [claude]
-     api_key = "your_key_here"
-     
      [trading]
      balance_usd = 1000.0
+     max_kelly_fraction = 0.2
      ```
+   > [!WARNING]
+   > Never commit `config.toml` if it contains sensitive keys. Always prefer `.env` for API keys and database URLs.
 3. **Run Backtest**:
    ```bash
    cargo run --bin poc_collection -- --days 30

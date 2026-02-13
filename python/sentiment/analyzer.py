@@ -11,6 +11,9 @@ class SentimentAnalyzer:
         """
         Calculates an aggregate sentiment score between -1 and 1.
         """
+        if not self.enabled:
+            raise RuntimeError("SentimentAnalyzer is not enabled. Check model loading/configuration.")
+            
         if not texts:
             return 0.0
             

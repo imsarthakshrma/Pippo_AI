@@ -6,13 +6,19 @@ use anyhow::Result;
 use serde_json::Value;
 
 /// Calls the Python RL system to calculate a reward for a settled trade.
-pub fn calculate_reward(trade_id: &str, outcome: &str) -> Result<f64> {
-    init_python();
+pub fn calculate_reward(
+    trade_id: &str, 
+    outcome: &str, 
+    edge: f64, 
+    is_kelly_compliant: bool,
+    avoided_mistake: bool
+) -> Result<f64> {
+    init_python()?;
     Python::with_gil(|py| {
         let rl_module = py.import("rl.rewards")?;
         let reward: f64 = rl_module
             .getattr("calculate_trade_reward")?
-            .call1((trade_id, outcome))?
+            .call1((trade_id, outcome, edge, is_kelly_compliant, avoided_mistake))?
             .extract()?;
         Ok(reward)
     })
@@ -21,7 +27,7 @@ pub fn calculate_reward(trade_id: &str, outcome: &str) -> Result<f64> {
 
 /// Calls the Python RL system to suggest an optimized position size.
 pub fn suggest_position_size(market_id: &str, current_balance: f64) -> Result<f64> {
-    init_python();
+    init_python()?;
     Python::with_gil(|py| {
         let rl_module = py.import("rl.agent")?;
         let size: f64 = rl_module

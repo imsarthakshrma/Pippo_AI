@@ -66,8 +66,10 @@ pub enum VotePosition {
 /// The final resolution of a voting round.
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub enum VotingOutcome {
-    /// The trade was rejected (vetoed).
+    /// The trade was rejected (vetoed by a StrongNo).
     Vetoed,
+    /// The trade was rejected by a majority vote.
+    Rejected,
     /// The trade was approved with a specific aggregate confidence/size.
     Approved(f64),
     /// No consensus reached; follow the agent with the highest confidence.
@@ -98,6 +100,11 @@ impl VotingRound {
         // Rule 2: Affirmative Majority (>= 3 Yes AND Yes > No)
         if yes_count >= 3 && yes_count > no_count {
             return VotingOutcome::Approved(0.0); // Placeholder for aggregated size
+        }
+        
+        // Rule 2.5: Symmetric Rejection (>= 3 No AND No > Yes)
+        if no_count >= 3 && no_count > yes_count {
+            return VotingOutcome::Rejected;
         }
         
         // Rule 3: Split decision or lack of majority = highest confidence wins

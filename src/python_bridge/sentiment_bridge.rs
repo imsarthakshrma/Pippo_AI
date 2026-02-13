@@ -6,7 +6,7 @@ use anyhow::Result;
 
 /// Calls Python to analyze sentiment of a batch of text.
 pub fn analyze_sentiment(texts: Vec<String>) -> Result<f64> {
-    init_python();
+    init_python()?;
     Python::with_gil(|py| {
         let sentiment_module = py.import("sentiment.analyzer")?;
         let score: f64 = sentiment_module

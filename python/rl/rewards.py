@@ -1,16 +1,18 @@
 # Python implementation of the RL reward calculation for Pippo.
 
 def calculate_trade_reward(
-    trade_outcome: str, 
-    edge: float, 
-    is_kelly_compliant: bool,
+    trade_id: str,
+    outcome: str, 
+    edge: float = 0.0, 
+    is_kelly_compliant: bool = False,
     avoided_mistake: bool = False
 ) -> float:
     """
     Quantifies the reward or penalty for a single trade.
     
     Args:
-        trade_outcome: "Win" or "Loss"
+        trade_id: Unique identifier for the trade
+        outcome: "Win" or "Loss"
         edge: The identified edge percentage (e.g., 0.12 for 12%)
         is_kelly_compliant: Whether the position size followed Kelly limits
         avoided_mistake: Bonus for learning from past failures
@@ -21,7 +23,7 @@ def calculate_trade_reward(
     reward = 0.0
     
     # 1. Outcome-based rewards
-    if trade_outcome == "Win":
+    if outcome == "Win":
         reward += 100.0
         # Strategic bonus for high-edge wins
         if edge >= 0.10:
